@@ -6,4 +6,7 @@ def home_page(request):
 
 def about_me(request):
     return render(request, 'about_me.html')
+
+def portfolio(request):
+    return render(request, 'portfolio.html')
     
