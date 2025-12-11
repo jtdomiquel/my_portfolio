@@ -1,0 +1,200 @@
+{% extends "base_template.html" %}
+{% block title %}Home Page - Jomark Domiquel{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="row">
+    <div data-aos="fade-zoom-in" data-aos-easing="ease-in-back" data-aos-delay="50" data-aos-offset="0">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    {% static 'assets/images/JD_web_background_1.jpg' as profile_pic %}
+                    <div class="row gx-lg-5 justify-content-center align-items-center min-vh-50 position-relative"
+                        style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                                url('{{ profile_pic }}') center/cover no-repeat;
+                               min-height: 800px;">
+                        
+                        <div class="col-12 col-md-8 col-lg-6 text-center text-white px-3 py-5">
+                            <!-- Typing animation for title -->
+                            <div class="typing-container mb-4">
+                                <h1 class="display-4 fw-bold">
+                                    <span class="typed-text text-warning"></span>
+                                </h1>
+                            </div>
+                            
+                            <!-- Fade-in animation for subtitle -->
+                            <p class="lead fs-4 mb-5 fade-in-text">
+                                Passionate developer with expertise in creating innovative digital solutions. I specialize in building responsive, user-friendly applications that solve real-world problems.
+                            </p>
+                            
+                            <!-- Button animation -->
+                            <div class="btn-container">
+                                <a href="#portfolio" class="btn btn-primary btn-lg px-5 py-3 me-3 slide-in-left">View My Work</a>
+                                <a href="#contact" class="btn btn-outline-light btn-lg px-5 py-3 slide-in-right">Get In Touch</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Typing animation styles */
+.typed-text {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid #ffc107; /* Cursor color */
+    animation: typing 3.5s steps(30, end), blink-caret .75s step-end infinite;
+}
+
+.cursor {
+    display: inline-block;
+    width: 3px;
+    background-color: #ffc107;
+    animation: blink 1s infinite;
+}
+
+/* Typing animation */
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+/* Cursor blink animation */
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #ffc107; }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Fade in animation for text */
+.fade-in-text {
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out forwards;
+    animation-delay: 4s; /* Start after typing finishes */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Button animations */
+.slide-in-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    animation: slideInLeft 1s ease-out forwards;
+    animation-delay: 4s; /* Start after text fades in */
+}
+
+.slide-in-right {
+    opacity: 0;
+    transform: translateX(50px);
+    animation: slideInRight 1s ease-out forwards;
+    animation-delay: 4.5s; /* Staggered delay */
+}
+
+@keyframes slideInLeft {
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Staggered letter animation alternative */
+.stagger-text {
+    display: inline-block;
+    overflow: hidden;
+}
+
+.stagger-text span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: letterStagger 0.5s ease forwards;
+}
+
+.stagger-text span:nth-child(n) {
+    animation-delay: calc(0.1s * var(--i));
+}
+
+@keyframes letterStagger {
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+// JavaScript for typing animation
+document.addEventListener('DOMContentLoaded', function() {
+    // Text to be typed
+    const textToType = "Hello, I'm Jomark Domiquel";
+    const typedTextElement = document.querySelector('.typed-text');
+    
+    // Clear the initial content
+    typedTextElement.innerHTML = '';
+    
+    // Type out the text character by character
+    let i = 0;
+    const typingSpeed = 85; // milliseconds per character
+    
+    function typeWriter() {
+        if (i < textToType.length) {
+            typedTextElement.innerHTML += textToType.charAt(i);
+            i++;
+            setTimeout(typeWriter, typingSpeed);
+        } else {
+            // Remove cursor animation after typing completes
+            setTimeout(() => {
+                const cursor = document.querySelector('.cursor');
+                cursor.style.animation = 'none';
+                cursor.style.borderRight = 'none';
+            }, 1000);
+        }
+    }
+    
+    // Start typing animation after a short delay
+    setTimeout(typeWriter, 1000);
+    
+    // Alternative: Staggered letter animation (uncomment to use)
+    /*
+    const title = "Hello, I'm Jomark Domiquel";
+    const letters = title.split('');
+    let html = '';
+    letters.forEach((letter, index) => {
+        html += `<span style="--i: ${index}">${letter === ' ' ? '&nbsp;' : letter}</span>`;
+    });
+    typedTextElement.innerHTML = html;
+    typedTextElement.className = 'stagger-text';
+    */
+});
+
+// Optional: Intersection Observer for animation on scroll
+const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('animated');
+        }
+    });
+}, observerOptions);
+
+// Observe elements if needed
+document.querySelectorAll('.fade-in-text, .slide-in-left, .slide-in-right').forEach(el => {
+    observer.observe(el);
+});
+</script>
+
+{% endblock %}
