@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myPortfolioApp',
+    'django_recaptcha',
 ]
 
 MIDDLEWARE = [
@@ -76,8 +77,12 @@ WSGI_APPLICATION = 'my_portfolio.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  # MySQL backend
+        'NAME': 'my_portfolio_db',  # Database name
+        'USER': 'root',  # MySQL username
+        'PASSWORD': 'vcdu2021Ms5',  # MySQL password
+        'HOST': 'localhost',  # Host (default is localhost)
+        'PORT': '3308',  # Default MySQL port
     }
 }
 
@@ -119,6 +124,12 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    os.path.join(BASE_DIR, 'myPortfolioApp/static'),
 ]
+
+AUTH_USER_MODEL = 'myPortfolioApp.UserInfo'
+
+RECAPTCHA_PUBLIC_KEY = '6LccCCosAAAAAAWWqYgb3FQV2ECQJdoBK041gSn8'   # Site Key
+RECAPTCHA_PRIVATE_KEY = '6LccCCosAAAAANjP8EALJy5_zMpgbCtVcziQXdUe' # Secret Key
