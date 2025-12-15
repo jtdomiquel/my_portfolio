@@ -7,7 +7,7 @@
 <head>
 
     <meta charset="utf-8" />
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}Sign-Up Page - My Portfolio{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -100,31 +100,102 @@
                                         </div>
 
                                         <div class="mt-4">
-                                            <form method="POST">
+                                            <form method="POST" enctype="multipart/form-data">
                                                 {% csrf_token %}
-                                                <div class="mb-3">
-                                                    <label for="username" class="form-label">Username</label>
-                                                    <input type="text" class="form-control" id="username" placeholder="Enter username" name="username">
-                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label for="firstname" class="form-label">Firstname <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" required>
+                                                            <div class="invalid-feedback">
+                                                                Please enter Firstname
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="password-input">Password</label>
-                                                    <div class="position-relative auth-pass-inputgroup mb-3">
-                                                        <input type="password" class="form-control pe-5 password-input" placeholder="Enter password" id="password-input" name="password">
-                                                        <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label for="middlename" class="form-label">Middlename <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="middle_name" id="middle_name" placeholder="Middle Name" required>
+                                                            <div class="invalid-feedback">
+                                                                Please enter Middle name
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label for="last_name" class="form-label">Lastname <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" required>
+                                                            <div class="invalid-feedback">
+                                                                Please enter Last name
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label for="address" class="form-label">Address. <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="address" id="address" placeholder="Address" required>
+                                                            <div class="invalid-feedback">
+                                                                Please enter your Address
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label for="contact_no" class="form-label">Contact No. <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="contact_no" id="contact_no" placeholder="Contact No." required>
+                                                            <div class="invalid-feedback">
+                                                                Please enter Contact No.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-12">
+                                                        <div class="mb-3">
+                                                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required>
+                                                            <div class="invalid-feedback">
+                                                                Please enter Username
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label for="password1" class="form-label">Password <span class="text-danger">*</span></label>
+                                                            <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" required>
+                                                            <div id="newPasswordStrength"></div>
+                                                            <div class="invalid-feedback">
+                                                                Please enter Password
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label for="password2" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                                            <input type="password" class="form-control" name="password2" id="password2" placeholder="Confirm Password" required>
+                                                            <div id="confirmPasswordStrength"></div>
+                                                            <div class="invalid-feedback">
+                                                                Please enter Confirm Password
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-12">
+                                                        <div class="mt-4">
+                                                            <button class="btn btn-success w-100" type="submit" id="sa-basic">Register</button>
+                                                        </div>
                                                     </div>
                                                 </div>
-
-                                                <div class="col-lg-12">
-                                                    <div class="mt-4">
-                                                        <button class="btn btn-success w-100" type="submit" id="sa-basic">Login</button>
-                                                    </div>
-                                                </div>
-
+                                                
                                             </form>
                                         </div>
                                         <div class="mt-5 text-center">
-                                            <p class="mb-0">Don't have an account ? <a href="{% url 'home_page' %}" class="fw-semibold text-primary text-decoration-underline"> Home</a> </p>
+                                            <p class="mb-0">Don't have an account ? <a href="{% url 'login_page' %}" class="fw-semibold text-primary text-decoration-underline"> Login</a> </p>
                                         </div>
                                     </div>
                                 </div>
@@ -150,7 +221,7 @@
                     <div class="col-lg-12">
                         <div class="text-center">
                             <p class="mb-0">&copy;
-                                <script>document.write(new Date().getFullYear())</script> Developed by: <a href="{% url 'signup' %}"> Jomark Domiquel</a>
+                                <script>document.write(new Date().getFullYear())</script> Developed by: Jomark Domiquel
                             </p>
                         </div>
                     </div>
