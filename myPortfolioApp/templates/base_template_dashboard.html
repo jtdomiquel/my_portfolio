@@ -20,6 +20,8 @@
     <!--Swiper slider css-->
     <link href="{% static 'assets/libs/swiper/swiper-bundle.min.css'%}" rel="stylesheet" type="text/css" />
 
+    <!-- Plugins css -->
+    <link href="{% static 'assets/libs/dropzone/dropzone.css'%}" rel="stylesheet" type="text/css" />
     
 
     <!-- Layout config Js -->
@@ -120,7 +122,7 @@
             <!-- LOGO -->
             <div class="navbar-brand-box">
                 <!-- Dark Logo-->
-                <a href="{% url 'home_page' %}" class="logo logo-dark">
+                <a href="{% url 'admin_portfolio' %}" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="{% static 'assets/images/JD_single_log_light.png'%}" alt="" height="50">
                     </span>
@@ -129,7 +131,7 @@
                     </span>
                 </a>
                 <!-- Light Logo-->
-                <a href="{% url 'home_page' %}" class="logo logo-light">
+                <a href="{% url 'admin_portfolio' %}" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="{% static 'assets/images/JD_single_log_light.png'%}" alt="" height="50">
                     </span>
@@ -147,28 +149,17 @@
                     <div id="two-column-menu">
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
-                        <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{% url 'home_page' %}">
-                                <i class="ri-home-2-line"></i> <span data-key="t-widgets">Home</span>
-                            </a>
-                        </li>
-                       
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{% url 'about_me' %}">
-                                <i class="ri-user-line"></i> <span data-key="t-widgets">About Me</span>
-                            </a>
-                        </li>
+                        <li class="menu-title"><span data-key="t-menu">Menu</span></li> 
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="{% url 'portfolio' %}">
+                            <a class="nav-link menu-link" href="{% url 'admin_portfolio' %}">
                                 <i class="ri-briefcase-line"></i> <span data-key="t-widgets">Portfolio</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#">
-                                <i class="ri-contacts-book-line"></i> <span data-key="t-widgets">Contact</span>
+                            <a class="nav-link menu-link" href="#" data-bs-toggle="modal" data-bs-target="#zoomInModal">
+                                <i class="ri-logout-box-line"></i> <span data-key="t-widgets">Logout</span>
                             </a>
                         </li>
                     </ul>
@@ -185,6 +176,28 @@
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
+
+        <!-- Modals -->
+        <div id="zoomInModal" class="modal fade zoomIn" tabindex="-1" aria-labelledby="zoomInModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="zoomInModalLabel">Logout?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h5 class="fs-16">
+                            Are you sure you want to Logout?
+                        </h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger"><a href="{% url 'logout' %}"> Logout</a></button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
 
         <!-- Global Notification Modal -->
         <div id="globalNotificationModal" class="modal fade" tabindex="-1" aria-hidden="true">
@@ -273,7 +286,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-6">
-                            <script>document.write(new Date().getFullYear())</script> © <a href="{% url 'login_page' %}">My Portfolio</a>.
+                            <script>document.write(new Date().getFullYear())</script> © My Portfolio.
                         </div>
                         <div class="col-sm-6">
                             <div class="text-sm-end d-none d-sm-block">
@@ -1227,6 +1240,12 @@
 
     <!-- profile-setting init js -->
     <script src="{% static 'assets/js/pages/profile-setting.init.js'%}"></script>
+
+    <!-- dropzone js -->
+    <script src="{% static 'assets/libs/dropzone/dropzone-min.js'%}"></script>
+
+    <!-- project list init -->
+    <script src="{% static 'assets/js/pages/project-list.init.js'%}"></script>
 
     <!-- aos js -->
     <script src="{% static 'assets/libs/aos/aos.js'%}"></script>

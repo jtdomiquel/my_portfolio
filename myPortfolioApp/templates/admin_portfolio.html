@@ -1,0 +1,362 @@
+{% extends "base_template_dashboard.html" %}
+{% block title %}Portfolio - Jomark Domiquel{% endblock %}
+{% block content %}
+{% load static %}
+<div id="addTickerReportModal" class="modal fade" tabindex="-1" aria-labelledby="addTickerReportModalLabel" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTickerReportModalLabel">Add Portfolio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form method="POST" action="{% url 'admin_addPortfolio' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row g-4">
+                                <div class="col-lg-12">
+                                    <p class="text-muted mb-0">Project Title</p>
+                                    <input type="text" class="form-control" id="projectTitle" name="projectTitle">
+                                </div>
+                                <div class="col-lg-12">
+                                    <p class="text-muted mb-0">Thumbnail Image</p>
+                                    <input class="form-control" type="file"  name="thumbnailFile" id="thumbnailFile" accept="image/*">
+                                </div>
+                                <div class="col-lg-12">
+                                    <p class="text-muted mb-0">Project Discription</p>
+                                    <input type="text" class="form-control" id="projectDescription" name="projectDescription">
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="choices-status-input" class="form-label">Priority</label>
+                                    <select class="form-select" data-choices data-choices-search-false id="projectPriority" name="projectPriority">
+                                        <option value="High" selected>High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="choices-status-input" class="form-label">Status</label>
+                                    <select class="form-select" data-choices data-choices-search-false id="projectStatus" name="projectStatus">
+                                        <option value="Inprogress" selected>Inprogress</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="choices-status-input" class="form-label">Due Date</label>
+                                    <input type="date" class="form-control" id="projectDueDate" name="projectDueDate">
+                                </div>
+                                <div class="col-lg-12">
+                                    <div>
+                                        <h5 class="fs-14 mb-1">Project Images</h5>
+                                        <input class="form-control" type="file" id="projectFiles" name="projectFiles" multiple accept="image/*">
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-12">
+                                    <p class="text-muted mb-0">Skills</p>
+                                    <input type="text" class="form-control" id="projectUseSkills" name="projectUseSkills">
+                                </div>
+                            </div>
+                            <br>
+                            <!--end col-->
+                            <div class="d-flex justify-content-sm-end">
+                                <button type="submit" class="btn btn-outline-success w-lg btn-label waves-effect waves-light"><i class="ri-check-double-line label-icon align-middle fs-16 me-2"></i> Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade flip" id="deletePortfolioModal" tabindex="-1" aria-labelledby="deletePortfolioModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="POST" action="{% url 'admin_deletePortfolioInfo' %}">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-5 text-center">
+                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#405189,secondary:#f06548" style="width:90px;height:90px"></lord-icon>
+                    <div class="mt-4 text-center">
+                        <h4>You are about to delete a portfolio ?</h4>
+                        <p class="text-muted fs-15 mb-4">Deleting your portfolio will remove record from our database.</p>
+                        <input type="text" class="form-control" id="deletePortfolio_id" name="deletePortfolio_id" hidden required>
+                        <h4 class="text-muted" id="deletePortfolioName"></h4>
+                        <br>
+                        <button type="submit" class="btn btn-danger" id="delete-record">Yes, Delete It</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4 mb-3">
+    <div class="col-sm-auto">
+        <div>
+            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTickerReportModal"><i class="ri-add-line align-bottom me-1"></i> Add New</a>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Search Bar -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Portfolio Projects</h4>
+                <div class="search-box" style="width: 300px;">
+                    <input type="text" id="searchPortfolioGrid" class="form-control" placeholder="Search projects...">
+                    <i class="ri-search-line search-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Grid Container -->
+    <div class="row" id="cardBody_portfolio_lists">
+        <!-- Cards will be loaded here via AJAX -->
+    </div>
+
+    <!-- Pagination -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <ul class="pagination pagination-separated justify-content-center justify-content-sm-end mb-0" id="pagination2"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    loadPortfoliosList('', 1);
+});
+
+$('#searchPortfolioGrid').on('keyup', function() {
+    let query = $(this).val();
+    loadPortfoliosList(query, 1);
+});
+
+function loadPortfoliosList(query = '', page = 1) {
+    $.ajax({
+        url: '{% url "admin_searchLoadPortfolioLists" %}',
+        data: { 
+            'q': query, 
+            'page': page
+        },
+        dataType: 'json',
+        success: function(data) {
+            // Clear container
+            $('#cardBody_portfolio_lists').empty();
+            
+            // Show empty state if no data
+            if (data.portfolioDataLists.length === 0) {
+                $('#cardBody_portfolio_lists').html(`
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <div class="avatar-lg mx-auto mb-4">
+                                    <div class="avatar-title bg-light text-secondary rounded-circle">
+                                        <i class="ri-folder-line fs-36"></i>
+                                    </div>
+                                </div>
+                                <h5 class="text-muted">No Projects Found</h5>
+                                <p class="text-muted mb-4">
+                                    ${query ? 'No projects match your search.' : 'No portfolio projects found.'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            } else {
+                // Add cards in grid layout
+                data.portfolioDataLists.forEach(function(item) {
+                    $('#cardBody_portfolio_lists').append(`
+                        <div class="col-xxl-3 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="p-3 mt-n3 mx-n3 bg-secondary-subtle rounded-top">
+                                        <div class="d-flex gap-1 align-items-center justify-content-end my-n2">
+                                            <div class="dropdown">
+                                                <button class="btn btn-light p-0" 
+                                                        style="width: 28px; height: 28px;"
+                                                        data-bs-toggle="dropdown" 
+                                                        aria-expanded="false"
+                                                        title="Options">
+                                                    <i class="ri-menu-line text-primary fs-16"></i>
+                                                </button>
+
+                                                <div class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+
+                                                    <a class="dropdown-item" href="#">
+                                                        <i class="ri-eye-fill align-bottom me-2 text-primary"></i> View Details
+                                                    </a>
+                                                    <div class="dropdown-divider"></div>
+
+                                                    <a onclick="selectDeletePortfolioInfo('${item.portfolio_id}','${item.project_title}');" 
+                                                    class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePortfolioModal">
+                                                        <i class="ri-delete-bin-fill align-bottom me-2"></i> Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-center pb-3">
+                                            ${item.thumbnail_image 
+                                                ? `<img src="${item.thumbnail_image}" alt="${item.project_title}" height="60" class="rounded">`
+                                                : `<div class="avatar-sm mx-auto">
+                                                     <div class="avatar-title bg-light text-primary rounded-circle fs-20">
+                                                         ${item.project_title ? item.project_title.charAt(0).toUpperCase() : 'P'}
+                                                     </div>
+                                                   </div>`
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="py-3">
+                                        <h5 class="fs-14 mb-3" title="${item.project_title}">
+                                            ${item.project_title || 'Untitled Project'}
+                                        </h5>
+                                        <div class="row gy-3">
+                                            <div class="col-12">
+                                                <div>
+                                                    <p class="text-muted mb-1" 
+                                                    style="display: 
+                                                        -webkit-box; 
+                                                        -webkit-line-clamp: 2; 
+                                                        -webkit-box-orient: vertical; 
+                                                        overflow: hidden;
+                                                        text-overflow: ellipsis;
+                                                        line-height: 1.5;
+                                                        max-height: 3em;
+                                                        max-width: 500px;" 
+                                                       title="${item.project_discriptions || 'No description'}">
+                                                        ${item.project_discriptions || 'No description'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div>
+                                                    <p class="text-muted mb-1">Status</p>
+                                                    ${item.status === 'Completed'
+                                                    ?'<span class="badge bg-success-subtle text-success badge-border fs-12">Completed</span>':
+                                                    item.status === 'Inprogress'
+                                                    ?'<span class="badge bg-warning-subtle text-warning badge-border fs-12">Inprogress</span>':
+                                                    ''
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div>
+                                                    <p class="text-muted mb-1">Finished Date</p>
+                                                    <h5 class="fs-14 mb-0">
+                                                        ${item.date_finished || 'Not set'}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center mt-3">
+                                            <p class="text-muted mb-0 me-2">Skills:</p>
+                                            <div style="flex: 1;">
+                                                <p class="text-muted mb-0 skills-text" 
+                                                style="display: 
+                                                        -webkit-box; 
+                                                        -webkit-line-clamp: 1; 
+                                                        -webkit-box-orient: vertical; 
+                                                        overflow: hidden;
+                                                        text-overflow: ellipsis;
+                                                        line-height: 1.5;
+                                                        max-height: 3em;
+                                                        max-width: 200px;">
+                                                    ${item.skills || 'No skills'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!-- end col -->
+                    `);
+                });
+            }
+
+            // Update pagination controls
+            updatePortfolioPagination(data, query);
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            $('#cardBody_portfolio_lists').html(`
+                <div class="col-12">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="ri-error-warning-line me-1"></i> 
+                        Failed to load portfolio data. Please try again.
+                    </div>
+                </div>
+            `);
+        }
+    });
+}
+
+function updatePortfolioPagination(data, query) {
+    $('#pagination2').empty();
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+
+    if (data.total_pages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = data.total_pages;
+    } else {
+        const half = Math.floor(maxVisiblePages / 2);
+        startPage = Math.max(data.current_page - half, 1);
+        endPage = Math.min(startPage + maxVisiblePages - 1, data.total_pages);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+        }
+    }
+
+    // Add first page button if needed
+    if (startPage > 1) {
+        $('#pagination2').append(`
+            <li class="page-item">
+                <a href="#" class="page-link" onclick="loadPortfoliosList('${query}', 1)">1</a>
+            </li>
+            ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+        `);
+    }
+
+    // Add page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        $('#pagination2').append(`
+            <li class="page-item ${i === data.current_page ? 'active' : ''}">
+                <a href="#" class="page-link" onclick="loadPortfoliosList('${query}', ${i})">${i}</a>
+            </li>
+        `);
+    }
+
+    // Add last page button if needed
+    if (endPage < data.total_pages) {
+        $('#pagination2').append(`
+            ${endPage < data.total_pages - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+            <li class="page-item">
+                <a href="#" class="page-link" onclick="loadPortfoliosList('${query}', ${data.total_pages})">${data.total_pages}</a>
+            </li>
+        `);
+    }
+}
+
+function selectDeletePortfolioInfo(portfolioId, projectTitle) {
+    document.getElementById('deletePortfolio_id').value = portfolioId;
+    document.getElementById('deletePortfolioName').innerText = projectTitle;
+
+}
+</script>
+{% endblock %}

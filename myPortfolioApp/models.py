@@ -39,3 +39,21 @@ class UserInfo(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+class portfolio_details(models.Model):
+    user_id = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name='user_id')
+    project_title = models.CharField(max_length=100, blank=True, null=True)
+    thumbnail_image = models.ImageField(upload_to='portfolio_thumbnails/', blank=True, null=True)
+    project_discriptions = models.CharField(max_length=500, blank=True, null=True)
+    priority = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=100, blank=True, null=True)
+    skills = models.CharField(max_length=100, blank=True, null=True)
+    date_finished = models.DateTimeField(null=True)
+    date_save = models.DateTimeField(auto_now_add=True)
+    last_update = models.DateTimeField(auto_now=True)
+
+class portfolio_files(models.Model):
+    portfolio_id = models.ForeignKey(portfolio_details, on_delete=models.CASCADE, related_name='portfolio_id')
+    picture_path = models.ImageField(upload_to='portfolio_files/', blank=True, null=True)
+    date_save = models.DateTimeField(auto_now_add=True)
+    last_update = models.DateTimeField(auto_now=True)

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myPortfolioApp',
     'django_recaptcha',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -128,6 +129,9 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'myPortfolioApp/static'),
 ]
+
+MEDIA_URL = '/myPortfolioApp/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'myPortfolioApp/media')
 
 AUTH_USER_MODEL = 'myPortfolioApp.UserInfo'
 
