@@ -1,5 +1,5 @@
 {% extends "base_template_dashboard.html" %}
-{% block title %}Portfolio - Jomark Domiquel{% endblock %}
+{% block title %}Portfolio Overview - Jomark Domiquel{% endblock %}
 {% block content %}
 {% load static %}
 <div id="addTickerReportModal" class="modal fade" tabindex="-1" aria-labelledby="addTickerReportModalLabel" aria-modal="true">
@@ -12,24 +12,25 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-lg-12">
-                        <form method="POST" action="{% url 'admin_addPortfolio' %}" enctype="multipart/form-data">
+                        <form method="POST" action="{% url 'admin_addPortfolioFeature' %}" enctype="multipart/form-data">
                             {% csrf_token %}
+                            <input type="text" class="form-control" id="portfolioId" name="portfolioId" value="{{ portfolioDetailsList.portfolio_id }}" hidden>
                             <div class="row g-4">
                                 <div class="col-lg-12">
-                                    <p class="text-muted mb-0">Project Title</p>
-                                    <input type="text" class="form-control" id="projectTitle" name="projectTitle">
+                                    <p class="text-muted mb-0">Feature Title</p>
+                                    <input type="text" class="form-control" id="featureTitle" name="featureTitle">
                                 </div>
                                 <div class="col-lg-12">
                                     <p class="text-muted mb-0">Thumbnail Image</p>
                                     <input class="form-control" type="file"  name="thumbnailFile" id="thumbnailFile" accept="image/*">
                                 </div>
                                 <div class="col-lg-12">
-                                    <p class="text-muted mb-0">Project Discription</p>
-                                    <input type="text" class="form-control" id="projectDescription" name="projectDescription">
+                                    <p class="text-muted mb-0">Feature Discription</p>
+                                    <input type="text" class="form-control" id="featureDescription" name="featureDescription">
                                 </div>
                                 <div class="col-lg-6">
                                     <label for="choices-status-input" class="form-label">Priority</label>
-                                    <select class="form-select" data-choices data-choices-search-false id="projectPriority" name="projectPriority">
+                                    <select class="form-select" data-choices data-choices-search-false id="featurePriority" name="featurePriority">
                                         <option value="High" selected>High</option>
                                         <option value="Medium">Medium</option>
                                         <option value="Low">Low</option>
@@ -37,25 +38,25 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <label for="choices-status-input" class="form-label">Status</label>
-                                    <select class="form-select" data-choices data-choices-search-false id="projectStatus" name="projectStatus">
+                                    <select class="form-select" data-choices data-choices-search-false id="featureStatus" name="featureStatus">
                                         <option value="Inprogress" selected>Inprogress</option>
                                         <option value="Completed">Completed</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-6">
                                     <label for="choices-status-input" class="form-label">Due Date</label>
-                                    <input type="date" class="form-control" id="projectDueDate" name="projectDueDate">
+                                    <input type="date" class="form-control" id="featureDueDate" name="featureDueDate">
                                 </div>
                                 <div class="col-lg-12">
                                     <div>
                                         <h5 class="fs-14 mb-1">Project Images</h5>
-                                        <input class="form-control" type="file" id="projectFiles" name="projectFiles" multiple accept="image/*">
+                                        <input class="form-control" type="file" id="featureFiles" name="featureFiles" multiple accept="image/*">
                                     </div>
 
                                 </div>
                                 <div class="col-lg-12">
                                     <p class="text-muted mb-0">Skills</p>
-                                    <input type="text" class="form-control" id="projectUseSkills" name="projectUseSkills">
+                                    <input type="text" class="form-control" id="featureUseSkills" name="featureUseSkills">
                                 </div>
                             </div>
                             <br>
@@ -73,7 +74,7 @@
 
 <div class="modal fade flip" id="deletePortfolioModal" tabindex="-1" aria-labelledby="deletePortfolioModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <form method="POST" action="{% url 'admin_deletePortfolioInfo' %}">
+        <form method="POST" action="{% url 'admin_deletePortfolioFeatureInfo' %}">
             {% csrf_token %}
             <div class="modal-content">
                 <div class="modal-header">
@@ -82,10 +83,11 @@
                 <div class="modal-body p-5 text-center">
                     <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#405189,secondary:#f06548" style="width:90px;height:90px"></lord-icon>
                     <div class="mt-4 text-center">
-                        <h4>You are about to delete a portfolio ?</h4>
+                        <h4>You are about to delete a portfolio feature ?</h4>
                         <p class="text-muted fs-15 mb-4">Deleting your portfolio will remove record from our database.</p>
-                        <input type="text" class="form-control" id="deletePortfolio_id" name="deletePortfolio_id" hidden required>
-                        <h4 class="text-muted" id="deletePortfolioName"></h4>
+                        <input type="text" class="form-control" id="deletePortfolioFeature_id" name="deletePortfolioFeature_id" hidden required>
+                        <input type="text" class="form-control" id="deletePortfolio_id" name="deletePortfolio_id" value="{{ portfolioDetailsList.portfolio_id }}" hidden required>
+                        <h4 class="text-muted" id="deletePortfolioFeatureName"></h4>
                         <br>
                         <button type="submit" class="btn btn-danger" id="delete-record">Yes, Delete It</button>
                     </div>
@@ -95,59 +97,220 @@
     </div>
 </div>
 
-<div class="row g-4 mb-3">
-    <div class="col-sm-auto">
-        <div>
-            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTickerReportModal"><i class="ri-add-line align-bottom me-1"></i> Add New</a>
-        </div>
-    </div>
-</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mt-n4 mx-n4">
+            <div class="bg-warning-subtle">
+                <div class="card-body pb-0 px-4">
+                    <div class="row mb-3">
+                        <div class="col-md">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-auto">
+                                    <div class="text-center pb-3">
+                                        <img src="{{ portfolioDetailsList.project_thumbnail.url }}" alt="" 
+                                        height="60" class="rounded">
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div>
+                                        <h4 class="fw-bold">{{ portfolioDetailsList.project_title }}</h4>
+                                        <input type="text" class="form-control" id="portfolioHeadId" name="portfolioHeadId" value="{{ portfolioDetailsList.portfolio_id }}" hidden>
+                                        <div class="hstack gap-3 flex-wrap">
+                                            <div><i class="ri-building-line align-bottom me-1"></i> Software Developer</div>
+                                            <div class="vr"></div>
+                                            <div>Create Date : <span class="fw-medium">{{ portfolioDetailsList.date_save }}</span></div>
+                                            <div class="vr"></div>
+                                            <div>Due Date : <span class="fw-medium">{{ portfolioDetailsList.date_finished }}</span></div>
+                                            <div class="vr"></div>
+                                            {% if portfolioDetailsList.status == "Completed" %}
+                                                <div class="badge rounded-pill bg-success fs-12">{{ portfolioDetailsList.status }}</div>
+                                            {% endif %}
 
-<div class="container-fluid">
-    <!-- Search Bar -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Portfolio Projects</h4>
-                <div class="search-box" style="width: 300px;">
-                    <input type="text" id="searchPortfolioGrid" class="form-control" placeholder="Search projects...">
-                    <i class="ri-search-line search-icon"></i>
+                                            {% if portfolioDetailsList.status == "Inprogress" %}
+                                                <div class="badge rounded-pill bg-warning fs-12">{{ portfolioDetailsList.status }}</div>
+                                            {% endif %}
+                                            <div class="badge rounded-pill bg-danger fs-12">{{ portfolioDetailsList.priority }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="hstack gap-1 flex-wrap">
+                                <a type="button" href="{% url 'admin_portfolio' %}" class="btn py-0 fs-20 text-body">
+                                    <i class="ri-arrow-left-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#project-overview" role="tab">
+                                Overview
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#project-features" role="tab">
+                                Features
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- end card body -->
+            </div>
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="tab-content text-muted">
+            <div class="tab-pane fade show active" id="project-overview" role="tabpanel">
+                <div class="row">
+                    <div class="col-xl-9 col-lg-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-muted">
+                                    <h6 class="mb-3 fw-semibold text-uppercase">Summary</h6>
+                                    <p>{{ portfolioDetailsList.project_title }}</p>
+
+                                    <div class="pt-3 border-top border-top-dashed mt-4">
+                                        <div class="row gy-3">
+
+                                            <div class="col-lg-3 col-sm-6">
+                                                <div>
+                                                    <p class="mb-2 text-uppercase fw-medium">Create Date :</p>
+                                                    <h5 class="fs-15 mb-0">{{ portfolioDetailsList.date_save }}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-sm-6">
+                                                <div>
+                                                    <p class="mb-2 text-uppercase fw-medium">Due Date :</p>
+                                                    <h5 class="fs-15 mb-0">{{ portfolioDetailsList.date_finished }}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-sm-6">
+                                                <div>
+                                                    <p class="mb-2 text-uppercase fw-medium">Priority :</p>
+                                                    <div class="badge bg-danger fs-12">{{ portfolioDetailsList.priority }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-sm-6">
+                                                <div>
+                                                    <p class="mb-2 text-uppercase fw-medium">Status :</p>
+                                                    {% if portfolioDetailsList.status == "Completed" %}
+                                                        <div class="badge bg-success fs-12">{{ portfolioDetailsList.status }}</div>
+                                                    {% endif %}
+
+                                                    {% if portfolioDetailsList.status == "Inprogress" %}
+                                                        <div class="badge bg-warning fs-12">{{ portfolioDetailsList.status }}</div>
+                                                    {% endif %}
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- ene col -->
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Skills</h5>
+                                <div class="d-flex flex-wrap gap-2 fs-16">
+                                    {% if portfolioDetailsList.skills %}
+                                        {% for skill in portfolioDetailsList.skills %}
+                                            <div class="badge fw-medium bg-secondary-subtle text-secondary">{{ skill }}</div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="text-muted mb-0">No skills listed</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end tab pane -->
+            <div class="tab-pane fade" id="project-features" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-4">
+                            <h5 class="card-title flex-grow-1">Features</h5>
+                        </div>
+                        <div class="row g-4 mb-3">
+                            <div class="col-sm-auto">
+                                <div>
+                                    <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTickerReportModal"><i class="ri-add-line align-bottom me-1"></i> Add Feature</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <!-- Search Bar -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-end align-items-center">
+                                        <div class="search-box" style="width: 300px;">
+                                            <input type="text" id="searchPortfolioGrid" class="form-control" placeholder="Search">
+                                            <i class="ri-search-line search-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Portfolio Grid Container -->
+                            <div class="row" id="cardBody_portfolio_lists">
+                                <!-- Cards will be loaded here via AJAX -->
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <ul class="pagination pagination-separated justify-content-center justify-content-sm-end mb-0" id="pagination2"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- end tab pane -->
         </div>
     </div>
-
-    <!-- Portfolio Grid Container -->
-    <div class="row" id="cardBody_portfolio_lists">
-        <!-- Cards will be loaded here via AJAX -->
-    </div>
-
-    <!-- Pagination -->
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <ul class="pagination pagination-separated justify-content-center justify-content-sm-end mb-0" id="pagination2"></ul>
-            </div>
-        </div>
-    </div>
+    <!-- end col -->
 </div>
+<!-- end row -->
 
 <script>
 $(document).ready(function() {
-    loadPortfoliosList('', 1);
+    loadPortfoliosFeaturesList('', 1);
 });
 
 $('#searchPortfolioGrid').on('keyup', function() {
     let query = $(this).val();
-    loadPortfoliosList(query, 1);
+    loadPortfoliosFeaturesList(query, 1);
 });
 
-function loadPortfoliosList(query = '', page = 1) {
+function loadPortfoliosFeaturesList(query = '', page = 1) {
+    let portfolio_id = $('#portfolioHeadId').val();
     $.ajax({
-        url: '{% url "admin_searchLoadPortfolioLists" %}',
+        url: '{% url "admin_searchLoadPortfolioFeatureLists" %}',
         data: { 
             'q': query, 
-            'page': page
+            'page': page,
+            'portfolio_id': portfolio_id,
         },
         dataType: 'json',
         success: function(data) {
@@ -193,12 +356,12 @@ function loadPortfoliosList(query = '', page = 1) {
 
                                                 <div class="dropdown-menu dropdown-menu-end shadow-sm border-0">
 
-                                                    <a class="dropdown-item" href="/admin_portfolio_overview/${item.portfolio_id}">
+                                                    <a class="dropdown-item" href="/admin_portfolio_overview/${item.feature_id}">
                                                         <i class="ri-eye-fill align-bottom me-2 text-primary"></i> View Details
                                                     </a>
                                                     <div class="dropdown-divider"></div>
 
-                                                    <a onclick="selectDeletePortfolioInfo('${item.portfolio_id}','${item.project_title}');" 
+                                                    <a onclick="selectDeletePortfolioInfo('${item.feature_id}','${item.feature_title}');" 
                                                     class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePortfolioModal">
                                                         <i class="ri-delete-bin-fill align-bottom me-2"></i> Remove
                                                     </a>
@@ -207,10 +370,10 @@ function loadPortfoliosList(query = '', page = 1) {
                                         </div>
                                         <div class="text-center pb-3">
                                             ${item.thumbnail_image 
-                                                ? `<img src="${item.thumbnail_image}" alt="${item.project_title}" height="60" class="rounded">`
+                                                ? `<img src="${item.thumbnail_image}" alt="${item.feature_title}" height="60" class="rounded">`
                                                 : `<div class="avatar-sm mx-auto">
                                                      <div class="avatar-title bg-light text-primary rounded-circle fs-20">
-                                                         ${item.project_title ? item.project_title.charAt(0).toUpperCase() : 'P'}
+                                                         ${item.feature_title ? item.feature_title.charAt(0).toUpperCase() : 'P'}
                                                      </div>
                                                    </div>`
                                             }
@@ -218,8 +381,8 @@ function loadPortfoliosList(query = '', page = 1) {
                                     </div>
 
                                     <div class="py-3">
-                                        <h5 class="fs-14 mb-3" title="${item.project_title}">
-                                            ${item.project_title || 'Untitled Project'}
+                                        <h5 class="fs-14 mb-3" title="${item.feature_title}">
+                                            ${item.feature_title || 'Untitled Project'}
                                         </h5>
                                         <div class="row gy-3">
                                             <div class="col-12">
@@ -234,8 +397,8 @@ function loadPortfoliosList(query = '', page = 1) {
                                                         line-height: 1.5;
                                                         max-height: 3em;
                                                         max-width: 500px;" 
-                                                       title="${item.project_discriptions || 'No description'}">
-                                                        ${item.project_discriptions || 'No description'}
+                                                       title="${item.feature_discriptions || 'No description'}">
+                                                        ${item.feature_discriptions || 'No description'}
                                                     </p>
                                                 </div>
                                             </div>
@@ -353,9 +516,9 @@ function updatePortfolioPagination(data, query) {
     }
 }
 
-function selectDeletePortfolioInfo(portfolioId, projectTitle) {
-    document.getElementById('deletePortfolio_id').value = portfolioId;
-    document.getElementById('deletePortfolioName').innerText = projectTitle;
+function selectDeletePortfolioInfo(portfolioFeatureId, projectFeatureTitle) {
+    document.getElementById('deletePortfolioFeature_id').value = portfolioFeatureId;
+    document.getElementById('deletePortfolioFeatureName').innerText = projectFeatureTitle;
 
 }
 </script>

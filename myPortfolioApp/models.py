@@ -57,3 +57,22 @@ class portfolio_files(models.Model):
     picture_path = models.ImageField(upload_to='portfolio_files/', blank=True, null=True)
     date_save = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
+
+class portfolio_features(models.Model):
+    feature_user_id = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name='feature_user_id')
+    feature_portfolio_id = models.ForeignKey(portfolio_details, on_delete=models.CASCADE, related_name='feature_portfolio_id')
+    feature_title = models.CharField(max_length=100, blank=True, null=True)
+    thumbnail_image = models.ImageField(upload_to='portfolio_feature_thumbnails/', blank=True, null=True)
+    feature_discriptions = models.CharField(max_length=500, blank=True, null=True)
+    priority = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=100, blank=True, null=True)
+    skills = models.CharField(max_length=100, blank=True, null=True)
+    date_finished = models.DateTimeField(null=True)
+    date_save = models.DateTimeField(auto_now_add=True)
+    last_update = models.DateTimeField(auto_now=True)
+
+class portfolio_features_files(models.Model):
+    portfolio_feat_id = models.ForeignKey(portfolio_features, on_delete=models.CASCADE, related_name='portfolio_feat_id')
+    picture_path = models.ImageField(upload_to='portfolio_feature_files/', blank=True, null=True)
+    date_save = models.DateTimeField(auto_now_add=True)
+    last_update = models.DateTimeField(auto_now=True)

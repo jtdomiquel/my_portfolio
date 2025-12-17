@@ -11,10 +11,17 @@ urlpatterns = [
     path('home_page/', views.home_page, name='home_page'),
     path('about_me/', views.about_me, name='about_me'),
     path('portfolio/', views.portfolio, name='portfolio'),
+    path('home_searchLoadPortfolioLists/', views.home_searchLoadPortfolioLists, name='home_searchLoadPortfolioLists'),
+    path('portfolio_overview/', views.portfolio_overview, name='portfolio_overview'),
 
     path('portfolio_dashboard/', views.portfolio_dashboard, name='portfolio_dashboard'),
     path('admin_portfolio/', views.admin_portfolio, name='admin_portfolio'),
     path('admin_addPortfolio/', views.admin_addPortfolio, name='admin_addPortfolio'),
+    path('admin_portfolio_overview/<portfolio_id>', views.admin_portfolio_overview, name='admin_portfolio_overview'),
+
+    path('admin_addPortfolioFeature/', views.admin_addPortfolioFeature, name='admin_addPortfolioFeature'),
+    path('admin_searchLoadPortfolioFeatureLists/', views.admin_searchLoadPortfolioFeatureLists, name='admin_searchLoadPortfolioFeatureLists'),
+    path('admin_deletePortfolioFeatureInfo/', views.admin_deletePortfolioFeatureInfo, name='admin_deletePortfolioFeatureInfo'),
     
     path('admin_searchLoadPortfolioLists/', views.admin_searchLoadPortfolioLists, name='admin_searchLoadPortfolioLists'),
     path('admin_deletePortfolioInfo/', views.admin_deletePortfolioInfo, name='admin_deletePortfolioInfo'),
