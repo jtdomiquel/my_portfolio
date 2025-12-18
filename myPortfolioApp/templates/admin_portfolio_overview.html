@@ -304,13 +304,12 @@ $('#searchPortfolioGrid').on('keyup', function() {
 });
 
 function loadPortfoliosFeaturesList(query = '', page = 1) {
-    let portfolio_id = $('#portfolioHeadId').val();
     $.ajax({
         url: '{% url "admin_searchLoadPortfolioFeatureLists" %}',
         data: { 
             'q': query, 
             'page': page,
-            'portfolio_id': portfolio_id,
+            'portfolio_id': $('#portfolioHeadId').val(),
         },
         dataType: 'json',
         success: function(data) {

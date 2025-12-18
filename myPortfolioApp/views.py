@@ -333,21 +333,23 @@ def admin_searchLoadPortfolioFeatureLists(request):
 
     user = request.user
 
+    filter_conditions = Q()
     if query:
-        filter_conditions = Q()
-        if query:
-            filter_conditions |= Q(feature_title__icontains=query) | \
-                                 Q(priority__icontains=query) | \
-                                 Q(status__icontains=query) | \
-                                 Q(skills__icontains=query) | \
-                                 Q(feature_discriptions__icontains=query) 
+        
+        filter_conditions |= Q(feature_title__icontains=query) | \
+                                Q(priority__icontains=query) | \
+                                Q(status__icontains=query) | \
+                                Q(skills__icontains=query) | \
+                                Q(feature_discriptions__icontains=query) 
         
         filter_conditions &= Q(feature_user_id=user.id) 
         filter_conditions &= Q(feature_portfolio_id=portfolio_id) 
         
         portfolioFeatureDetailLists = portfolio_features.objects.filter(filter_conditions).order_by('-date_finished')
     else:
-        portfolioFeatureDetailLists = portfolio_features.objects.all().order_by('-date_finished')
+        filter_conditions &= Q(feature_user_id=user.id) 
+        filter_conditions &= Q(feature_portfolio_id=portfolio_id)
+        portfolioFeatureDetailLists = portfolio_features.objects.filter(filter_conditions).all().order_by('-date_finished')
     
 
     paginator = Paginator(portfolioFeatureDetailLists, 8) 
