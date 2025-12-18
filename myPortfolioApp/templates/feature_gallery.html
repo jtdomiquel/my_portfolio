@@ -1,0 +1,148 @@
+{% extends "base_template_dashboard.html" %}
+{% block title %}Portfolio Overview - Jomark Domiquel{% endblock %}
+{% block content %}
+{% load static %}
+<!-- glightbox css -->
+<link rel="stylesheet" href="{% static 'assets/libs/glightbox/css/glightbox.min.css'%}">
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mt-n4 mx-n4">
+            <div class="bg-warning-subtle">
+                <div class="card-body pb-0 px-4">
+                    <div class="row mb-3">
+                        <div class="col-md">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-auto">
+                                    <div class="text-center pb-3">
+                                        <img src="{{ portfolioFeatureDetailsList.feature_thumbnail.url }}" alt="" 
+                                        height="60" class="rounded">
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div>
+                                        <h4 class="fw-bold">{{ portfolioFeatureDetailsList.feature_title }}</h4>
+                                        <input type="text" class="form-control" id="portfolioHeadId" name="portfolioHeadId" value="{{ portfolioFeatureDetailsList.portfolio_id }}" hidden>
+                                        <div class="hstack gap-3 flex-wrap">
+                                            <div><i class="ri-building-line align-bottom me-1"></i> Software Developer</div>
+                                            <div class="vr"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="hstack gap-1 flex-wrap">
+                                <a type="button" href="{% url 'admin_portfolio_overview' portfolioFeatureDetailsList.portfolio_id %}" class="btn py-0 fs-20 text-body">
+                                    <i class="ri-arrow-left-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end card body -->
+            </div>
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-muted">
+                    <h6 class="mb-3 fw-semibold text-uppercase">Summary</h6>
+                    <p>{{ portfolioFeatureDetailsList.feature_discriptions_html|safe }}</p>
+
+                    <div class="pt-3 border-top border-top-dashed mt-4">
+                        <div class="row gy-3">
+
+                            <div class="col-lg-3 col-sm-6">
+                                <div>
+                                    <p class="mb-2 text-uppercase fw-medium">Create Date :</p>
+                                    <h5 class="fs-15 mb-0">{{ portfolioFeatureDetailsList.date_save }}</h5>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6">
+                                <div>
+                                    <p class="mb-2 text-uppercase fw-medium">Due Date :</p>
+                                    <h5 class="fs-15 mb-0">{{ portfolioFeatureDetailsList.date_finished }}</h5>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6">
+                                <div>
+                                    <p class="mb-2 text-uppercase fw-medium">Priority :</p>
+                                    <div class="badge bg-danger fs-12">{{ portfolioFeatureDetailsList.priority }}</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6">
+                                <div>
+                                    <p class="mb-2 text-uppercase fw-medium">Status :</p>
+                                    {% if portfolioFeatureDetailsList.status == "Completed" %}
+                                        <div class="badge bg-success fs-12">{{ portfolioFeatureDetailsList.status }}</div>
+                                    {% endif %}
+
+                                    {% if portfolioFeatureDetailsList.status == "Inprogress" %}
+                                        <div class="badge bg-warning fs-12">{{ portfolioFeatureDetailsList.status }}</div>
+                                    {% endif %}
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row gallery-wrapper">
+                            {% for file in portfolioFeatureFilesLists %}
+                            <div class="element-item col-xxl-3 col-xl-4 col-sm-6" >
+                                <div class="gallery-box card">
+                                    <div class="gallery-container">
+                                        <!-- Use file.picture_path.url to get the image URL -->
+                                        <a class="image-popup" href="{{ file.picture_path.url }}" title="{{ portfolio_feature.feature_title }}">
+                                            <img class="gallery-img img-fluid mx-auto" src="{{ file.picture_path.url }}" alt="{{ portfolio_feature.feature_title }}" />
+                                            <div class="gallery-overlay">
+                                                <h5 class="overlay-caption">{{ portfolio_feature.feature_title }}</h5>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <!-- Show message if no images exist -->
+                            <div class="col-12 text-center py-5">
+                                <p class="text-muted">No images found for this feature.</p>
+                            </div>
+                            {% endfor %}
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+                    </div>
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end card body -->
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+
+<!-- glightbox js -->
+<script src="{% static 'assets/libs/glightbox/js/glightbox.min.js'%}"></script>
+
+<!-- isotope-layout -->
+<script src="{% static 'assets/libs/isotope-layout/isotope.pkgd.min.js'%}"></script>
+
+<script src="{% static 'assets/js/pages/gallery.init.js'%}"></script>
+{% endblock %}

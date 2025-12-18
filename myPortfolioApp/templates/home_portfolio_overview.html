@@ -1,0 +1,414 @@
+{% extends "base_template.html" %}
+{% block title %}Portfolio Overview - Jomark Domiquel{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mt-n4 mx-n4">
+            <div class="bg-warning-subtle">
+                <div class="card-body pb-0 px-4">
+                    <div class="row mb-3">
+                        <div class="col-md">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-auto">
+                                    <div class="text-center pb-3">
+                                        <img src="{{ portfolioDetailsList.project_thumbnail.url }}" alt="" 
+                                        height="60" class="rounded">
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div>
+                                        <h4 class="fw-bold">{{ portfolioDetailsList.project_title }}</h4>
+                                        <input type="text" class="form-control" id="portfolioHeadId" name="portfolioHeadId" value="{{ portfolioDetailsList.portfolio_id }}" hidden>
+                                        <div class="hstack gap-3 flex-wrap">
+                                            <div><i class="ri-building-line align-bottom me-1"></i> Software Developer</div>
+                                            <div class="vr"></div>
+                                            <div>Create Date : <span class="fw-medium">{{ portfolioDetailsList.date_save }}</span></div>
+                                            <div class="vr"></div>
+                                            <div>Due Date : <span class="fw-medium">{{ portfolioDetailsList.date_finished }}</span></div>
+                                            <div class="vr"></div>
+                                            {% if portfolioDetailsList.status == "Completed" %}
+                                                <div class="badge rounded-pill bg-success fs-12">{{ portfolioDetailsList.status }}</div>
+                                            {% endif %}
+
+                                            {% if portfolioDetailsList.status == "Inprogress" %}
+                                                <div class="badge rounded-pill bg-warning fs-12">{{ portfolioDetailsList.status }}</div>
+                                            {% endif %}
+                                            <div class="badge rounded-pill bg-danger fs-12">{{ portfolioDetailsList.priority }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-auto">
+                            <div class="hstack gap-1 flex-wrap">
+                                <a type="button" href="{% url 'portfolio' %}" class="btn py-0 fs-20 text-body">
+                                    <i class="ri-arrow-left-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#project-overview" role="tab">
+                                Overview
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#project-features" role="tab">
+                                Features
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- end card body -->
+            </div>
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="tab-content text-muted">
+            <div class="tab-pane fade show active" id="project-overview" role="tabpanel">
+                <div class="row">
+                    <div class="col-xl-9 col-lg-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-muted">
+                                    <h6 class="mb-3 fw-semibold text-uppercase">Summary</h6>
+                                    <p>{{ portfolioDetailsList.project_discriptions_html|safe }}</p>
+
+                                    <div class="pt-3 border-top border-top-dashed mt-4">
+                                        <div class="row gy-3">
+
+                                            <div class="col-lg-3 col-sm-6">
+                                                <div>
+                                                    <p class="mb-2 text-uppercase fw-medium">Create Date :</p>
+                                                    <h5 class="fs-15 mb-0">{{ portfolioDetailsList.date_save }}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-sm-6">
+                                                <div>
+                                                    <p class="mb-2 text-uppercase fw-medium">Due Date :</p>
+                                                    <h5 class="fs-15 mb-0">{{ portfolioDetailsList.date_finished }}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-sm-6">
+                                                <div>
+                                                    <p class="mb-2 text-uppercase fw-medium">Priority :</p>
+                                                    <div class="badge bg-danger fs-12">{{ portfolioDetailsList.priority }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-sm-6">
+                                                <div>
+                                                    <p class="mb-2 text-uppercase fw-medium">Status :</p>
+                                                    {% if portfolioDetailsList.status == "Completed" %}
+                                                        <div class="badge bg-success fs-12">{{ portfolioDetailsList.status }}</div>
+                                                    {% endif %}
+
+                                                    {% if portfolioDetailsList.status == "Inprogress" %}
+                                                        <div class="badge bg-warning fs-12">{{ portfolioDetailsList.status }}</div>
+                                                    {% endif %}
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- ene col -->
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Skills</h5>
+                                <div class="d-flex flex-wrap gap-2 fs-16">
+                                    {% if portfolioDetailsList.skills %}
+                                        {% for skill in portfolioDetailsList.skills %}
+                                            <div class="badge fw-medium bg-secondary-subtle text-secondary">{{ skill }}</div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="text-muted mb-0">No skills listed</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end tab pane -->
+            <div class="tab-pane fade" id="project-features" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-4">
+                            <h5 class="card-title flex-grow-1">Features</h5>
+                        </div>
+                        <div class="container-fluid">
+                            <!-- Search Bar -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-end align-items-center">
+                                        <div class="search-box" style="width: 300px;">
+                                            <input type="text" id="searchPortfolioGrid" class="form-control" placeholder="Search">
+                                            <i class="ri-search-line search-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Portfolio Grid Container -->
+                            <div class="row" id="cardBody_portfolio_lists">
+                                <!-- Cards will be loaded here via AJAX -->
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <ul class="pagination pagination-separated justify-content-center justify-content-sm-end mb-0" id="pagination2"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end tab pane -->
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+
+<script>
+$(document).ready(function() {
+    loadPortfoliosFeaturesList('', 1);
+});
+
+$('#searchPortfolioGrid').on('keyup', function() {
+    let query = $(this).val();
+    loadPortfoliosFeaturesList(query, 1);
+});
+
+function loadPortfoliosFeaturesList(query = '', page = 1) {
+    $.ajax({
+        url: '{% url "home_searchLoadPortfolioFeatureLists" %}',
+        data: { 
+            'q': query, 
+            'page': page,
+            'portfolio_id': $('#portfolioHeadId').val(),
+        },
+        dataType: 'json',
+        success: function(data) {
+            // Clear container
+            $('#cardBody_portfolio_lists').empty();
+            
+            // Show empty state if no data
+            if (data.portfolioDataLists.length === 0) {
+                $('#cardBody_portfolio_lists').html(`
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <div class="avatar-lg mx-auto mb-4">
+                                    <div class="avatar-title bg-light text-secondary rounded-circle">
+                                        <i class="ri-folder-line fs-36"></i>
+                                    </div>
+                                </div>
+                                <h5 class="text-muted">No Projects Found</h5>
+                                <p class="text-muted mb-4">
+                                    ${query ? 'No projects match your search.' : 'No portfolio projects found.'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            } else {
+                // Add cards in grid layout
+                data.portfolioDataLists.forEach(function(item) {
+                    $('#cardBody_portfolio_lists').append(`
+                        <div class="col-xxl-3 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="p-3 mt-n3 mx-n3 bg-secondary-subtle rounded-top">
+                                        <div class="d-flex gap-1 align-items-center justify-content-end my-n2">
+                                            <div class="dropdown">
+                                                <button class="btn btn-light p-0" 
+                                                        style="width: 28px; height: 28px;"
+                                                        data-bs-toggle="dropdown" 
+                                                        aria-expanded="false"
+                                                        title="Options">
+                                                    <i class="ri-menu-line text-primary fs-16"></i>
+                                                </button>
+
+                                                <div class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+
+                                                    <a class="dropdown-item" href="/home_portfolio_feature_gallery/${item.feature_id}">
+                                                        <i class="ri-eye-fill align-bottom me-2 text-primary"></i> View Details
+                                                    </a>
+                                                    <div class="dropdown-divider"></div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-center pb-3">
+                                            ${item.thumbnail_image 
+                                                ? `<img src="${item.thumbnail_image}" alt="${item.feature_title}" height="60" class="rounded">`
+                                                : `<div class="avatar-sm mx-auto">
+                                                     <div class="avatar-title bg-light text-primary rounded-circle fs-20">
+                                                         ${item.feature_title ? item.feature_title.charAt(0).toUpperCase() : 'P'}
+                                                     </div>
+                                                   </div>`
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="py-3">
+                                        <h5 class="fs-14 mb-3" title="${item.feature_title}">
+                                            ${item.feature_title || 'Untitled Project'}
+                                        </h5>
+                                        <div class="row gy-3">
+                                            <div class="col-12">
+                                                <div>
+                                                    <p class="text-muted mb-1" 
+                                                    style="display: 
+                                                        -webkit-box; 
+                                                        -webkit-line-clamp: 2; 
+                                                        -webkit-box-orient: vertical; 
+                                                        overflow: hidden;
+                                                        text-overflow: ellipsis;
+                                                        line-height: 1.5;
+                                                        max-height: 3em;
+                                                        max-width: 500px;" 
+                                                       title="${item.feature_discriptions || 'No description'}">
+                                                        ${item.feature_discriptions || 'No description'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div>
+                                                    <p class="text-muted mb-1">Status</p>
+                                                    ${item.status === 'Completed'
+                                                    ?'<span class="badge bg-success-subtle text-success badge-border fs-12">Completed</span>':
+                                                    item.status === 'Inprogress'
+                                                    ?'<span class="badge bg-warning-subtle text-warning badge-border fs-12">Inprogress</span>':
+                                                    ''
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div>
+                                                    <p class="text-muted mb-1">Finished Date</p>
+                                                    <h5 class="fs-14 mb-0">
+                                                        ${item.date_finished || 'Not set'}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center mt-3">
+                                            <p class="text-muted mb-0 me-2">Skills:</p>
+                                            <div style="flex: 1;">
+                                                <p class="text-muted mb-0 skills-text" 
+                                                style="display: 
+                                                        -webkit-box; 
+                                                        -webkit-line-clamp: 1; 
+                                                        -webkit-box-orient: vertical; 
+                                                        overflow: hidden;
+                                                        text-overflow: ellipsis;
+                                                        line-height: 1.5;
+                                                        max-height: 3em;
+                                                        max-width: 200px;">
+                                                    ${item.skills || 'No skills'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!-- end col -->
+                    `);
+                });
+            }
+
+            // Update pagination controls
+            updatePortfolioPagination(data, query);
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            $('#cardBody_portfolio_lists').html(`
+                <div class="col-12">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="ri-error-warning-line me-1"></i> 
+                        Failed to load portfolio data. Please try again.
+                    </div>
+                </div>
+            `);
+        }
+    });
+}
+
+function updatePortfolioPagination(data, query) {
+    $('#pagination2').empty();
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+
+    if (data.total_pages <= maxVisiblePages) {
+        startPage = 1;
+        endPage = data.total_pages;
+    } else {
+        const half = Math.floor(maxVisiblePages / 2);
+        startPage = Math.max(data.current_page - half, 1);
+        endPage = Math.min(startPage + maxVisiblePages - 1, data.total_pages);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+        }
+    }
+
+    // Add first page button if needed
+    if (startPage > 1) {
+        $('#pagination2').append(`
+            <li class="page-item">
+                <a href="#" class="page-link" onclick="loadPortfoliosList('${query}', 1)">1</a>
+            </li>
+            ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+        `);
+    }
+
+    // Add page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        $('#pagination2').append(`
+            <li class="page-item ${i === data.current_page ? 'active' : ''}">
+                <a href="#" class="page-link" onclick="loadPortfoliosList('${query}', ${i})">${i}</a>
+            </li>
+        `);
+    }
+
+    // Add last page button if needed
+    if (endPage < data.total_pages) {
+        $('#pagination2').append(`
+            ${endPage < data.total_pages - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+            <li class="page-item">
+                <a href="#" class="page-link" onclick="loadPortfoliosList('${query}', ${data.total_pages})">${data.total_pages}</a>
+            </li>
+        `);
+    }
+}
+
+</script>
+{% endblock %}

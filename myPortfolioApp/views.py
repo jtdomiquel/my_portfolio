@@ -9,6 +9,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.conf import settings
 from django.db.models import Q
+import html
+import re
 
 from django.db import transaction
 from django.core.files.storage import default_storage
@@ -111,7 +113,7 @@ def admin_addPortfolio(request):
     if request.method == 'POST':
         project_title = request.POST.get('projectTitle')
         thumbnail_image = request.FILES.get('thumbnailFile')
-        project_description = request.POST.get('projectDescription')
+        raw_text = request.POST.get('project_description', '').strip()
         project_priority = request.POST.get('projectPriority')
         project_status = request.POST.get('projectStatus')
         project_due_date = request.POST.get('projectDueDate')
@@ -119,13 +121,16 @@ def admin_addPortfolio(request):
         
         project_files = request.FILES.getlist('projectFiles')
 
+        html_version = convert_to_html(raw_text)
+
         user = request.user
 
         portfolioDetails = portfolio_details.objects.create(
             user_id=user,
             project_title=project_title,
             thumbnail_image=thumbnail_image,
-            project_discriptions=project_description,
+            project_discriptions=raw_text,
+            project_discriptions_html=html_version,
             priority=project_priority,
             status=project_status,
             skills=project_skills,
@@ -140,6 +145,75 @@ def admin_addPortfolio(request):
 
     messages.error(request, 'Item not found!')
     return redirect('admin_portfolio')
+
+def convert_to_html(text):
+    """Convert formatting markers to safe HTML"""
+    if not text or not text.strip():
+        return ""
+    
+    import re
+    import html as html_module
+    
+    # First escape HTML to prevent XSS
+    safe_text = html_module.escape(text)
+    
+    # Convert formatting markers to HTML tags
+    html_text = safe_text
+    
+    # Bold: **text** → <strong>text</strong>
+    html_text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', html_text)
+    
+    # Italic: *text* or _text_ → <em>text</em>
+    html_text = re.sub(r'\*(.*?)\*', r'<em>\1</em>', html_text)
+    html_text = re.sub(r'_(.*?)_', r'<em>\1</em>', html_text)
+    
+    # Code: `code` → <code>code</code>
+    html_text = re.sub(r'`(.*?)`', r'<code>\1</code>', html_text)
+    
+    # Line breaks: \n → <br>
+    html_text = html_text.replace('\n', '<br>')
+    
+    # Convert lists - FIXED VERSION
+    lines = html_text.split('<br>')
+    result = []
+    in_list = False
+    list_type = ''  # Track if we're in ul or ol
+    
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        
+        if stripped.startswith('- ') or stripped.startswith('* '):
+            if not in_list:
+                result.append('<ul>')
+                in_list = True
+                list_type = 'ul'
+            # Safe check: ensure we have at least 2 chars
+            if len(stripped) >= 2:
+                result.append(f'<li>{stripped[2:]}</li>')
+            else:
+                result.append(f'<li>{stripped}</li>')
+                
+        elif re.match(r'^\d+\.\s', stripped):
+            if not in_list:
+                result.append('<ol>')
+                in_list = True
+                list_type = 'ol'
+            # Remove number prefix safely
+            clean_line = re.sub(r'^\d+\.\s', '', stripped)
+            result.append(f'<li>{clean_line}</li>')
+            
+        else:
+            if in_list:
+                result.append(f'</{list_type}>')
+                in_list = False
+                list_type = ''
+            result.append(line)
+    
+    # Close any open list
+    if in_list:
+        result.append(f'</{list_type}>')
+    
+    return '<br>'.join(result)
 
 @login_required
 def admin_searchLoadPortfolioLists(request):
@@ -194,7 +268,6 @@ def home_searchLoadPortfolioLists(request):
     query = request.GET.get('q', '')
     page = request.GET.get('page', 1)
 
-
     if query:
         filter_conditions = Q()
         if query:
@@ -223,6 +296,7 @@ def home_searchLoadPortfolioLists(request):
             'project_title': portfolio.project_title if portfolio.project_title else "",
             'thumbnail_image':request.build_absolute_uri(settings.MEDIA_URL + str(portfolio.thumbnail_image)) if portfolio.thumbnail_image else '',
             'project_discriptions': portfolio.project_discriptions if portfolio.project_discriptions else "",
+            'project_discriptions_html': portfolio.project_discriptions_html if portfolio.project_discriptions_html else "",
             'priority': portfolio.priority if portfolio.priority else "",
             'status': portfolio.status if portfolio.status else "",
             'skills': portfolio.skills if portfolio.skills else "",
@@ -275,6 +349,7 @@ def admin_portfolio_overview(request, portfolio_id):
         'project_title': portfolioDetails.project_title if portfolioDetails.project_title else "",
         'project_thumbnail': portfolioDetails.thumbnail_image if portfolioDetails.thumbnail_image else None,
         'project_discriptions': portfolioDetails.project_discriptions if portfolioDetails.project_discriptions else "",
+        'project_discriptions_html': portfolioDetails.project_discriptions_html if portfolioDetails.project_discriptions_html else "",
         'priority': portfolioDetails.priority if portfolioDetails.priority else "",
         'status': portfolioDetails.status if portfolioDetails.status else "",
         'skills': portfolioDetails.skills.split(', ') if portfolioDetails.skills else [],
@@ -286,6 +361,27 @@ def admin_portfolio_overview(request, portfolio_id):
         'portfolioDetailsList' : portfolioDetailsList,
         })
 
+def home_portfolio_overview(request, portfolio_id):
+
+    portfolioDetails = portfolio_details.objects.get(id=int(portfolio_id))
+    
+    portfolioDetailsList = {
+        'portfolio_id': portfolioDetails.id,
+        'project_title': portfolioDetails.project_title if portfolioDetails.project_title else "",
+        'project_thumbnail': portfolioDetails.thumbnail_image if portfolioDetails.thumbnail_image else None,
+        'project_discriptions': portfolioDetails.project_discriptions if portfolioDetails.project_discriptions else "",
+        'project_discriptions_html': portfolioDetails.project_discriptions_html if portfolioDetails.project_discriptions_html else "",
+        'priority': portfolioDetails.priority if portfolioDetails.priority else "",
+        'status': portfolioDetails.status if portfolioDetails.status else "",
+        'skills': portfolioDetails.skills.split(', ') if portfolioDetails.skills else [],
+        'date_finished': portfolioDetails.date_finished.strftime("%b. %d, %Y") if portfolioDetails.date_finished else "",
+        'date_save': portfolioDetails.date_save.strftime("%b. %d, %Y") if portfolioDetails.date_save else "",
+    }
+    
+    return render(request, 'home_portfolio_overview.html', {
+        'portfolioDetailsList' : portfolioDetailsList,
+        })
+
 @login_required
 def admin_addPortfolioFeature(request):
     if request.method == 'POST':
@@ -294,13 +390,15 @@ def admin_addPortfolioFeature(request):
 
         feature_title = request.POST.get('featureTitle')
         thumbnail_image = request.FILES.get('thumbnailFile')
-        feature_description = request.POST.get('featureDescription')
+        raw_text = request.POST.get('feature_description', '').strip()
         feature_priority = request.POST.get('featurePriority')
         feature_status = request.POST.get('featureStatus')
         feature_skills = request.POST.get('featureUseSkills')
         feature_due_date = request.POST.get('featureDueDate')
         
         feature_files = request.FILES.getlist('featureFiles')
+
+        html_version = convert_to_html(raw_text)
 
         user = request.user
 
@@ -309,7 +407,8 @@ def admin_addPortfolioFeature(request):
             feature_portfolio_id=portfolioDetails,
             feature_title=feature_title,
             thumbnail_image=thumbnail_image,
-            feature_discriptions=feature_description,
+            feature_discriptions=raw_text,
+            feature_discriptions_html=html_version,
             priority=feature_priority,
             status=feature_status,
             skills=feature_skills,
@@ -379,6 +478,59 @@ def admin_searchLoadPortfolioFeatureLists(request):
         'total_pages': paginator.num_pages if paginator.count > 0 else 1
     })
 
+
+def home_searchLoadPortfolioFeatureLists(request):
+    query = request.GET.get('q', '')
+    page = request.GET.get('page', 1)
+    portfolio_id = request.GET.get('portfolio_id')
+
+    user = request.user
+
+    filter_conditions = Q()
+    if query:
+        
+        filter_conditions |= Q(feature_title__icontains=query) | \
+                                Q(priority__icontains=query) | \
+                                Q(status__icontains=query) | \
+                                Q(skills__icontains=query) | \
+                                Q(feature_discriptions__icontains=query) 
+        
+        filter_conditions &= Q(feature_portfolio_id=portfolio_id) 
+        
+        portfolioFeatureDetailLists = portfolio_features.objects.filter(filter_conditions).order_by('-date_finished')
+    else:
+        filter_conditions &= Q(feature_portfolio_id=portfolio_id)
+        portfolioFeatureDetailLists = portfolio_features.objects.filter(filter_conditions).all().order_by('-date_finished')
+    
+
+    paginator = Paginator(portfolioFeatureDetailLists, 8) 
+    try:
+        models_page = paginator.page(page)
+    except PageNotAnInteger:
+        models_page = paginator.page(1)
+    except EmptyPage:
+        models_page = []
+
+    data = []
+    for feature in models_page:
+        data.append({
+            'feature_id': feature.id,
+            'feature_title': feature.feature_title if feature.feature_title else "",
+            'thumbnail_image':request.build_absolute_uri(settings.MEDIA_URL + str(feature.thumbnail_image)) if feature.thumbnail_image else '',
+            'feature_discriptions': feature.feature_discriptions if feature.feature_discriptions else "",
+            'feature_discriptions_html': feature.feature_discriptions_html if feature.feature_discriptions_html else "",
+            'priority': feature.priority if feature.priority else "",
+            'status': feature.status if feature.status else "",
+            'skills': feature.skills if feature.skills else "",
+            'date_finished': feature.date_finished.strftime("%b. %d, %Y") if feature.date_finished else "",
+        })
+
+    return JsonResponse({
+        'portfolioDataLists': data,
+        'current_page': models_page.number if models_page else 1,
+        'total_pages': paginator.num_pages if paginator.count > 0 else 1
+    })
+
 @login_required
 def admin_deletePortfolioFeatureInfo(request):
     try:
@@ -409,3 +561,104 @@ def admin_deletePortfolioFeatureInfo(request):
     except portfolioFeatureDetails.DoesNotExist:
         messages.error(request, 'Item not found!')
         return redirect('admin_portfolio_overview', portfolio_id)
+
+@login_required
+def admin_portfolio_feature_gallery(request, feature_id):
+    try:
+        portfolioFeaturesDetails = portfolio_features.objects.get(id=int(feature_id))
+        
+        
+        portfolioFeatureDetailsList = {
+            'feature_id': portfolioFeaturesDetails.id,
+            'portfolio_id': portfolioFeaturesDetails.feature_portfolio_id.id,
+            'feature_title': portfolioFeaturesDetails.feature_title if portfolioFeaturesDetails.feature_title else "",
+            'feature_thumbnail': portfolioFeaturesDetails.thumbnail_image if portfolioFeaturesDetails.thumbnail_image else None,
+            'feature_discriptions': portfolioFeaturesDetails.feature_discriptions if portfolioFeaturesDetails.feature_discriptions else "",
+            'feature_discriptions_html': portfolioFeaturesDetails.feature_discriptions_html if portfolioFeaturesDetails.feature_discriptions_html else "",
+            'priority': portfolioFeaturesDetails.priority if portfolioFeaturesDetails.priority else "",
+            'status': portfolioFeaturesDetails.status if portfolioFeaturesDetails.status else "",
+            'skills': portfolioFeaturesDetails.skills.split(', ') if portfolioFeaturesDetails.skills else [],
+            'date_finished': portfolioFeaturesDetails.date_finished.strftime("%b. %d, %Y") if portfolioFeaturesDetails.date_finished else "",
+            'date_save': portfolioFeaturesDetails.date_save.strftime("%b. %d, %Y") if portfolioFeaturesDetails.date_save else "",
+        }
+
+        portfolioFiles = portfolio_features_files.objects.filter(portfolio_feat_id=portfolioFeaturesDetails)
+        
+        portfolioFeatureFilesLists = []
+
+        for file in portfolioFiles:
+            file_dict = {
+                'id': file.id,
+                'picture_path': file.picture_path if file.picture_path else None,
+                'date_save': file.date_save.strftime("%b. %d, %Y") if file.date_save else "",
+                'last_update': file.last_update.strftime("%b. %d, %Y") if file.last_update else "",
+            }
+            portfolioFeatureFilesLists.append(file_dict)
+                
+        
+        return render(request, 'feature_gallery.html', {
+            'portfolioFeatureDetailsList' : portfolioFeatureDetailsList,
+            'portfolioFeatureFilesLists':portfolioFeatureFilesLists,
+            })
+        
+        # ... rest of your code ...
+        
+    except portfolio_features.DoesNotExist:
+        # Handle case where feature doesn't exist
+        messages.error(request, "Portfolio feature not found.")
+        return redirect('some_view_name')  # Redirect to appropriate view
+    
+    return render(request, 'feature_gallery.html', {
+        'portfolioFeatureDetailsList': portfolioFeatureDetailsList,
+        'portfolioFeatureFilesLists': portfolioFeatureFilesLists,
+    })
+
+def home_portfolio_feature_gallery(request, feature_id):
+    try:
+        portfolioFeaturesDetails = portfolio_features.objects.get(id=int(feature_id))
+        
+        
+        portfolioFeatureDetailsList = {
+            'feature_id': portfolioFeaturesDetails.id,
+            'portfolio_id': portfolioFeaturesDetails.feature_portfolio_id.id,
+            'feature_title': portfolioFeaturesDetails.feature_title if portfolioFeaturesDetails.feature_title else "",
+            'feature_thumbnail': portfolioFeaturesDetails.thumbnail_image if portfolioFeaturesDetails.thumbnail_image else None,
+            'feature_discriptions': portfolioFeaturesDetails.feature_discriptions if portfolioFeaturesDetails.feature_discriptions else "",
+            'feature_discriptions_html': portfolioFeaturesDetails.feature_discriptions_html if portfolioFeaturesDetails.feature_discriptions_html else "",
+            'priority': portfolioFeaturesDetails.priority if portfolioFeaturesDetails.priority else "",
+            'status': portfolioFeaturesDetails.status if portfolioFeaturesDetails.status else "",
+            'skills': portfolioFeaturesDetails.skills.split(', ') if portfolioFeaturesDetails.skills else [],
+            'date_finished': portfolioFeaturesDetails.date_finished.strftime("%b. %d, %Y") if portfolioFeaturesDetails.date_finished else "",
+            'date_save': portfolioFeaturesDetails.date_save.strftime("%b. %d, %Y") if portfolioFeaturesDetails.date_save else "",
+        }
+
+        portfolioFiles = portfolio_features_files.objects.filter(portfolio_feat_id=portfolioFeaturesDetails)
+        
+        portfolioFeatureFilesLists = []
+
+        for file in portfolioFiles:
+            file_dict = {
+                'id': file.id,
+                'picture_path': file.picture_path if file.picture_path else None,
+                'date_save': file.date_save.strftime("%b. %d, %Y") if file.date_save else "",
+                'last_update': file.last_update.strftime("%b. %d, %Y") if file.last_update else "",
+            }
+            portfolioFeatureFilesLists.append(file_dict)
+                
+        
+        return render(request, 'home_feature_gallery.html', {
+            'portfolioFeatureDetailsList' : portfolioFeatureDetailsList,
+            'portfolioFeatureFilesLists':portfolioFeatureFilesLists,
+            })
+        
+        # ... rest of your code ...
+        
+    except portfolio_features.DoesNotExist:
+        # Handle case where feature doesn't exist
+        messages.error(request, "Portfolio feature not found.")
+        return redirect('some_view_name')  # Redirect to appropriate view
+    
+    return render(request, 'home_feature_gallery.html', {
+        'portfolioFeatureDetailsList': portfolioFeatureDetailsList,
+        'portfolioFeatureFilesLists': portfolioFeatureFilesLists,
+    })

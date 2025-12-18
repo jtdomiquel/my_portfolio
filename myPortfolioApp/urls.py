@@ -22,9 +22,16 @@ urlpatterns = [
     path('admin_addPortfolioFeature/', views.admin_addPortfolioFeature, name='admin_addPortfolioFeature'),
     path('admin_searchLoadPortfolioFeatureLists/', views.admin_searchLoadPortfolioFeatureLists, name='admin_searchLoadPortfolioFeatureLists'),
     path('admin_deletePortfolioFeatureInfo/', views.admin_deletePortfolioFeatureInfo, name='admin_deletePortfolioFeatureInfo'),
+    path('admin_portfolio_feature_gallery/<feature_id>', views.admin_portfolio_feature_gallery, name='admin_portfolio_feature_gallery'),
     
     path('admin_searchLoadPortfolioLists/', views.admin_searchLoadPortfolioLists, name='admin_searchLoadPortfolioLists'),
     path('admin_deletePortfolioInfo/', views.admin_deletePortfolioInfo, name='admin_deletePortfolioInfo'),
+
+    
+    path('home_searchLoadPortfolioLists/', views.home_searchLoadPortfolioLists, name='home_searchLoadPortfolioLists'),
+    path('home_portfolio_overview/<portfolio_id>', views.home_portfolio_overview, name='home_portfolio_overview'),
+    path('home_searchLoadPortfolioFeatureLists/', views.home_searchLoadPortfolioFeatureLists, name='home_searchLoadPortfolioFeatureLists'),
+    path('home_portfolio_feature_gallery/<feature_id>', views.home_portfolio_feature_gallery, name='home_portfolio_feature_gallery'),
 
 ]
 
