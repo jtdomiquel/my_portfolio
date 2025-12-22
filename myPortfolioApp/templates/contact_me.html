@@ -1,0 +1,195 @@
+{% extends "base_template.html" %}
+{% block title %}Contact Me - Jomark Domiquel{% endblock %}
+{% block content %}
+{% load static %}
+
+<div data-aos="zoom-in">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="mb-2">Contact</h1>
+            <p>Feel free to reach out if you're looking for a developer, have a question, or just want to connect. I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.</p>
+
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Buttons Group -->
+                             <div class="row mb-3">
+                                <div class="col-lg-12">
+                                    <div class="d-flex">
+                                        <!-- Button icon on the left -->
+                                        <div class="me-3">
+                                            <button type="button" class="btn btn-outline-info btn-icon waves-effect waves-light rounded-pill material-shadow-none btn-lg">
+                                                <i class="ri-map-pin-line"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Contact content on the right -->
+                                        <div>
+                                            <h5 class="mb-2">Address</h5>
+                                            <p>P-6 MBAI Subd. Brgy. Bancasi, Butuan City, Agusan Del Norte 8600, Philippines</p>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+
+                             <div class="row mb-3">
+                                <div class="col-lg-12">
+                                    <div class="d-flex">
+                                        <!-- Button icon on the left -->
+                                        <div class="me-3">
+                                            <button type="button" class="btn btn-outline-info btn-icon waves-effect waves-light rounded-pill material-shadow-none btn-lg">
+                                                <i class="ri-phone-line"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Contact content on the right -->
+                                        <div>
+                                            <h5 class="mb-2">Contact No.</h5>
+                                            <p>+63 945 450 5623</p>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+
+                             <div class="row mb-3">
+                                <div class="col-lg-12">
+                                    <div class="d-flex">
+                                        <!-- Button icon on the left -->
+                                        <div class="me-3">
+                                            <button type="button" class="btn btn-outline-info btn-icon waves-effect waves-light rounded-pill material-shadow-none btn-lg">
+                                                <i class="ri-mail-line"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Contact content on the right -->
+                                        <div>
+                                            <h5 class="mb-2">Email</h5>
+                                            <p>jomarkdomiquel4@gmail.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+
+                             <div class="row mb-3">
+                                <div class="col-lg-12">
+                                    <iframe 
+                                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d611.3446548657548!2d125.48545774964586!3d8.940343304246682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sph!4v1766368237754!5m2!1sen!2sph&markers=color:0x4285F4%7Clabel:📍%7C8.940343304246682,125.48545774964586"
+                                        width="100%" 
+                                        height="400" 
+                                        style="border: 1px solid #ccc; border-radius: 8px;" 
+                                        allowfullscreen="" 
+                                        loading="lazy" 
+                                        referrerpolicy="no-referrer-when-downgrade">
+                                    </iframe>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card">
+                        <div class="card-body">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <form method="POST" action="{% url 'send_message' %}" id="contactForm">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <h4 class="form-label">Your Name</h4>
+                                            <input type="text" class="form-control" name="name" id="name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <h4 class="form-label">Your Email</h4>
+                                            <input type="email" class="form-control" name="email" id="email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <h4 class="form-label">Subject</h4>
+                                            <input type="text" class="form-control" name="subject" id="subject" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <h4 class="form-label">Message</h4>
+                                            <textarea 
+                                            class="form-control" 
+                                            id="message"
+                                            name="message" 
+                                            rows="10"
+                                            oninput="updatePreview(this.value)" required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="justify-content-center">
+                                            <button type="submit" class="btn rounded-pill btn-info btn-animation waves-effect waves-light" data-text="Send Message"><span>Send Message</span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Update preview in real-time
+function updatePreview(text) {
+    const previewBox = document.getElementById('previewBox');
+    previewBox.innerHTML = formatTextForDisplay(text);
+}
+
+// Format text for display
+function formatTextForDisplay(text) {
+    if (!text) return '';
+    
+    // Convert to HTML with formatting
+    let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/_(.*?)_/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>');
+    
+    // Convert lists
+    html = html.replace(/^- (.*?)(?=<br>|$)/gm, '• $1');
+    
+    return html;
+}
+
+// Insert formatting at cursor
+function insertText(formatting) {
+    const textarea = document.querySelector('textarea[name="project_description"]');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    
+    textarea.value = textarea.value.substring(0, start) + 
+                     formatting + 
+                     textarea.value.substring(end);
+    
+    // Update preview
+    updatePreview(textarea.value);
+    
+    // Focus back
+    textarea.focus();
+}
+</script>
+{% endblock %}

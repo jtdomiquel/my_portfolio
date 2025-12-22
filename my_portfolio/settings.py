@@ -137,3 +137,12 @@ AUTH_USER_MODEL = 'myPortfolioApp.UserInfo'
 
 RECAPTCHA_PUBLIC_KEY = '6LccCCosAAAAAAWWqYgb3FQV2ECQJdoBK041gSn8'   # Site Key
 RECAPTCHA_PRIVATE_KEY = '6LccCCosAAAAANjP8EALJy5_zMpgbCtVcziQXdUe' # Secret Key
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # or your email provider
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'jomarkdomiquel4@gmail.com'  # Your email
+EMAIL_HOST_PASSWORD = 'xsxehdvxzpdpvkuo'  # Use app-specific password
+DEFAULT_FROM_EMAIL = 'jomarkdomiquel4@gmail.com'
+ADMIN_EMAIL = 'jomarkdomiquel4@gmail.com'

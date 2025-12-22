@@ -11,6 +11,8 @@ urlpatterns = [
     path('home_page/', views.home_page, name='home_page'),
     path('about_me/', views.about_me, name='about_me'),
     path('portfolio/', views.portfolio, name='portfolio'),
+    path('contact_me/', views.contact_me, name='contact_me'),
+    path('send_message/', views.send_message, name='send_message'),
     path('home_searchLoadPortfolioLists/', views.home_searchLoadPortfolioLists, name='home_searchLoadPortfolioLists'),
     path('portfolio_overview/', views.portfolio_overview, name='portfolio_overview'),
 

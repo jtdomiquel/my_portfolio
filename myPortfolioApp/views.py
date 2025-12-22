@@ -11,6 +11,7 @@ from django.conf import settings
 from django.db.models import Q
 import html
 import re
+from django.core.mail import send_mail, BadHeaderError
 
 from django.db import transaction
 from django.core.files.storage import default_storage
@@ -94,6 +95,9 @@ def home_page(request):
 
 def about_me(request):
     return render(request, 'about_me.html')
+
+def contact_me(request):
+    return render(request, 'contact_me.html')
 
 def portfolio(request):
     return render(request, 'portfolio.html')
@@ -606,8 +610,8 @@ def admin_portfolio_feature_gallery(request, feature_id):
     except portfolio_features.DoesNotExist:
         # Handle case where feature doesn't exist
         messages.error(request, "Portfolio feature not found.")
-        return redirect('some_view_name')  # Redirect to appropriate view
-    
+        return  
+
     return render(request, 'feature_gallery.html', {
         'portfolioFeatureDetailsList': portfolioFeatureDetailsList,
         'portfolioFeatureFilesLists': portfolioFeatureFilesLists,
@@ -656,9 +660,81 @@ def home_portfolio_feature_gallery(request, feature_id):
     except portfolio_features.DoesNotExist:
         # Handle case where feature doesn't exist
         messages.error(request, "Portfolio feature not found.")
-        return redirect('some_view_name')  # Redirect to appropriate view
+        return
     
     return render(request, 'home_feature_gallery.html', {
         'portfolioFeatureDetailsList': portfolioFeatureDetailsList,
         'portfolioFeatureFilesLists': portfolioFeatureFilesLists,
     })
+
+def send_message(request):
+    if request.method == 'POST':
+        # Get form data
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        # Basic validation
+        if not name or not email or not subject or not message:
+            messages.error(request, 'Please fill in all required fields.')
+            return redirect('contact_me')
+        
+        # Prepare email content
+        email_subject = f"New Contact Form Message: {subject}"
+        email_message = f"""
+        Name: {name}
+        Email: {email}
+        Subject: {subject}
+        
+        Message:
+        {message}
+        
+        ---
+        This message was sent from your portfolio contact form.
+        """
+        
+        try:
+            # Send email to yourself (admin)
+            send_mail(
+                subject=email_subject,
+                message=email_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.ADMIN_EMAIL],  # Your email
+                fail_silently=False,
+            )
+            
+            # Optional: Send confirmation email to user
+            confirmation_subject = "Thank you for contacting me!"
+            confirmation_message = f"""
+            Dear {name},
+            
+            Thank you for reaching out through my portfolio website. 
+            I have received your message and will get back to you as soon as possible.
+            
+            Your message:
+            {message}
+            
+            Best regards,
+            Jomark Domiquel
+            """
+            
+            send_mail(
+                subject=confirmation_subject,
+                message=confirmation_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=True,
+            )
+            
+            messages.success(request, 'Thank you! Your message has been sent successfully.')
+            
+        except BadHeaderError:
+            messages.error(request, 'Invalid header found.')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+        
+        return redirect('contact_me')
+    
+    # For GET request, just render the page
+    return redirect('contact_me')
