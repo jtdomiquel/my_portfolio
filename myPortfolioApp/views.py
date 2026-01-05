@@ -11,7 +11,12 @@ from django.conf import settings
 from django.db.models import Q
 import html
 import re
+
 from django.core.mail import send_mail, BadHeaderError
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.utils import timezone
 
 from django.db import transaction
 from django.core.files.storage import default_storage
@@ -680,61 +685,83 @@ def send_message(request):
             messages.error(request, 'Please fill in all required fields.')
             return redirect('contact_me')
         
-        # Prepare email content
-        email_subject = f"New Contact Form Message: {subject}"
-        email_message = f"""
-        Name: {name}
-        Email: {email}
-        Subject: {subject}
-        
-        Message:
-        {message}
-        
-        ---
-        This message was sent from your portfolio contact form.
-        """
-        
         try:
-            # Send email to yourself (admin)
-            send_mail(
-                subject=email_subject,
-                message=email_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.ADMIN_EMAIL],  # Your email
-                fail_silently=False,
+            # Prepare context data for both emails
+            timestamp = timezone.now()
+            context = {
+                'name': name,
+                'email': email,
+                'subject': subject,
+                'message': message,
+                'timestamp': timestamp,
+                'admin_name': 'Jomark Domiquel',  # Your name
+                'site_name': settings.SITE_NAME,
+                'site_url': settings.SITE_URL,
+                'admin_email': settings.ADMIN_EMAIL,
+                'current_year': timezone.now().year,
+            }
+            
+            # ========== 1. Send HTML email to ADMIN ==========
+            admin_html_content = render_to_string('email_template_to_user.html', context)
+            admin_text_content = strip_tags(admin_html_content)
+            
+            admin_email = EmailMultiAlternatives(
+                subject=f"📨 New Contact: {subject}",
+                body=admin_text_content,
+                from_email=f"Portfolio Contact <{settings.DEFAULT_FROM_EMAIL}>",
+                to=[settings.ADMIN_EMAIL],
+                reply_to=[f"{name} <{email}>"],
             )
+            admin_email.attach_alternative(admin_html_content, "text/html")
+            admin_email.send()
             
-            # Optional: Send confirmation email to user
-            confirmation_subject = "Thank you for contacting me!"
-            confirmation_message = f"""
-            Dear {name},
+            # ========== 2. Send HTML confirmation to USER ==========
+            user_context = context.copy()
+            user_context.update({
+                'reference_id': f"MSG{timestamp.strftime('%Y%m%d%H%M%S')}",
+                'portfolio_projects_url': f"{settings.SITE_URL}/projects",
+                'github_url': settings.GITHUB_URL,
+                'linkedin_url': settings.LINKEDIN_URL,
+            })
             
-            Thank you for reaching out through my portfolio website. 
-            I have received your message and will get back to you as soon as possible.
+            user_html_content = render_to_string('email_template_to_user.html', user_context)
+            user_text_content = strip_tags(user_html_content)
             
-            Your message:
-            {message}
-            
-            Best regards,
-            Jomark Domiquel
-            """
-            
-            send_mail(
-                subject=confirmation_subject,
-                message=confirmation_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                fail_silently=True,
+            user_email = EmailMultiAlternatives(
+                subject=f"Thank you for contacting {settings.ADMIN_NAME}!",
+                body=user_text_content,
+                from_email=f"Jomark Domiquel <{settings.DEFAULT_FROM_EMAIL}>",
+                to=[email],
             )
+            user_email.attach_alternative(user_html_content, "text/html")
+            user_email.send()
             
-            messages.success(request, 'Thank you! Your message has been sent successfully.')
+            messages.success(request, 'Thank you! Your message has been sent successfully. Check your email for confirmation.')
             
         except BadHeaderError:
-            messages.error(request, 'Invalid header found.')
+            messages.error(request, 'Invalid header found in email.')
         except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
+            # Log the error but don't crash the user experience
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Email sending failed: {str(e)}")
+            
+            # Fallback to plain text email
+            try:
+                send_mail(
+                    subject=f"New Contact: {subject}",
+                    message=f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.ADMIN_EMAIL],
+                    fail_silently=True,
+                )
+                messages.success(request, 'Message sent! (Simple notification)')
+            except:
+                messages.error(request, 'Message saved but email failed. Please try again later.')
         
         return redirect('contact_me')
     
-    # For GET request, just render the page
     return redirect('contact_me')
+
+def email_template_user(request):
+    return render(request, 'email_template_to_user.html')

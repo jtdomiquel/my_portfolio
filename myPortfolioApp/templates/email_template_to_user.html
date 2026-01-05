@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Confirmation</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .header { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 40px 20px; text-align: center; }
+        .content { padding: 35px; }
+        .message-box { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 20px; margin: 20px 0; }
+        .btn { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; }
+        .social-links a { display: inline-block; margin: 0 10px; color: #475569; text-decoration: none; }
+        .footer { background: #f1f5f9; padding: 25px; text-align: center; color: #475569; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{% static 'assets/images/logo-dark.png'%}" alt="" height="60">
+            <h1 style="margin: 0; font-size: 32px;">✅ Message Received!</h1>
+            <p style="margin: 10px 0 0; opacity: 0.95; font-size: 18px;">Thank you for getting in touch</p>
+        </div>
+        
+        <div class="content">
+            <h2 style="color: #1e293b;">Hello {{ name }}!</h2>
+            
+            <p>Thank you for reaching out to me through my portfolio website. I've successfully received your message and will review it shortly.</p>
+            
+            <div class="message-box">
+                <h3 style="color: #0ea5e9; margin-top: 0;">📋 Message Summary</h3>
+                <p><strong>Subject:</strong> {{ subject }}</p>
+                <p><strong>Reference:</strong> #{{ reference_id }}</p>
+                <p><strong>Submitted:</strong> {{ timestamp|date:"F j, Y \a\t g:i A" }}</p>
+                <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px;">
+                    <p style="margin: 0; font-style: italic;">"{{ message|truncatechars:150 }}"</p>
+                </div>
+            </div>
+            
+            <h3 style="color: #1e293b;">⏱️ What Happens Next?</h3>
+            <p>I typically respond to messages within <strong>24-48 hours</strong>. I'll review your inquiry and get back to you at <strong>{{ email }}</strong>.</p>
+            
+            <div style="text-align: center; margin: 35px 0;">
+                <a href="{{ portfolio_projects_url }}" class="btn">🌟 View My Projects</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Jomark Domiquel</strong><br>Software Developer</p>
+            <p style="font-size: 13px; color: #64748b;">
+                This is an automated confirmation. Please do not reply to this email.<br>
+                For additional inquiries, contact me directly at <a href="mailto:{{ admin_email }}" style="color: #0ea5e9;">{{ admin_email }}</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 12px; color: #94a3b8;">
+                © {{ current_year }} {{ site_name }}
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -146,3 +146,10 @@ EMAIL_HOST_USER = 'jomarkdomiquel4@gmail.com'  # Your email
 EMAIL_HOST_PASSWORD = 'xsxehdvxzpdpvkuo'  # Use app-specific password
 DEFAULT_FROM_EMAIL = 'jomarkdomiquel4@gmail.com'
 ADMIN_EMAIL = 'jomarkdomiquel4@gmail.com'
+
+# Custom settings for email templates
+SITE_NAME = "Jomark Domiquel Portfolio"
+ADMIN_NAME = "Jomark Domiquel"
+SITE_URL = "https://www.facebook.com/jomark.domiquel"  # Your domain
+GITHUB_URL = "https://github.com/jtdomiquel"
+LINKEDIN_URL = "https://www.linkedin.com/in/jomark-domiquel-32460b367/"

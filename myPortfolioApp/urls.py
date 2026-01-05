@@ -13,6 +13,7 @@ urlpatterns = [
     path('portfolio/', views.portfolio, name='portfolio'),
     path('contact_me/', views.contact_me, name='contact_me'),
     path('send_message/', views.send_message, name='send_message'),
+    path('email_template_user/', views.email_template_user, name='email_template_user'),
     path('home_searchLoadPortfolioLists/', views.home_searchLoadPortfolioLists, name='home_searchLoadPortfolioLists'),
     path('portfolio_overview/', views.portfolio_overview, name='portfolio_overview'),
 
